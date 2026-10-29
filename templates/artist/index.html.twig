@@ -3,37 +3,35 @@
 {% block title %}Artist index{% endblock %}
 
 {% block body %}
-    <h1>Artist index</h1>
+    <div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="mb-0">Artist index</h1>
+        <a href="{{ path('app_artist_new') }}" class="btn-solid theme-primary">Nouveau</a>
+    </div>
 
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Id</th>
-                <th>Name</th>
-                <th>Bio</th>
-                <th>Thumbnail</th>
-                <th>actions</th>
-            </tr>
-        </thead>
-        <tbody>
+    <div class="row g-4 mb-5">
         {% for artist in artists %}
-            <tr>
-                <td>{{ artist.id }}</td>
-                <td>{{ artist.name }}</td>
-                <td>{{ artist.bio }}</td>
-                <td>{{ artist.thumbnail }}</td>
-                <td>
-                    <a href="{{ path('app_artist_show', {'id': artist.id}) }}">show</a>
-                    <a href="{{ path('app_artist_edit', {'id': artist.id}) }}">edit</a>
-                </td>
-            </tr>
+            <div class="sm:col-6 md:col-4 lg:col-3">
+                <div class="card h-100">
+                    {% if artist.thumbnail %}
+                        <img src="{{ artist.thumbnail }}" alt="Illustration de {{ artist.name }}" class="card-img-top" style="aspect-ratio: 1 / 1; object-fit: cover;">
+                    {% endif %}
+                    <div class="card-body d-flex flex-column">
+                        <h5 class="card-title">{{ artist.name }}</h5>
+                        {% if artist.bio %}
+                            <p class="card-text">{{ artist.bio|length > 100 ? artist.bio|slice(0, 100) ~ '…' : artist.bio }}</p>
+                        {% endif %}
+                        <div class="mt-auto d-flex gap-2">
+                            <a href="{{ path('app_artist_show', {'id': artist.id}) }}" class="btn-outline theme-primary">Voir</a>
+                            <a href="{{ path('app_artist_edit', {'id': artist.id}) }}" class="btn-outline theme-secondary">Modifier</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
         {% else %}
-            <tr>
-                <td colspan="5">no records found</td>
-            </tr>
+            <p>Aucun artiste pour le moment.</p>
         {% endfor %}
-        </tbody>
-    </table>
+    </div>
 
-    <a href="{{ path('app_artist_new') }}">Create new</a>
+    </div>
 {% endblock %}

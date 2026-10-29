@@ -1,0 +1,8 @@
+{
+    "twiggy.framework": "symfony",
+    "twiggy.phpExecutable": "/opt/homebrew/bin/php",
+    "twiggy.symfonyConsolePath": "bin/console",
+    "files.associations": {
+        "*.html.twig": "twig"
+    }
+}

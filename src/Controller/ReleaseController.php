@@ -4,11 +4,13 @@ namespace App\Controller;
 
 use App\Entity\Release;
 use App\Form\ReleaseType;
+use App\Repository\ArtistRepository;
 use App\Repository\ReleaseRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Attribute\MapQueryParameter;
 use Symfony\Component\Routing\Attribute\Route;
 
 #[Route('/release')]
@@ -23,15 +25,27 @@ final class ReleaseController extends AbstractController
     }
 
     #[Route('/new', name: 'app_release_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, EntityManagerInterface $entityManager): Response
-    {
+    public function new(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        ArtistRepository $artistRepository,
+        #[MapQueryParameter] ?int $artist = null,
+    ): Response {
         $release = new Release();
+        if (null !== $artist) {
+            $release->setArtist($artistRepository->find($artist));
+        }
+
         $form = $this->createForm(ReleaseType::class, $release);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->persist($release);
             $entityManager->flush();
+
+            if (null !== $artist) {
+                return $this->redirectToRoute('app_artist_show', ['id' => $release->getArtist()->getId()], Response::HTTP_SEE_OTHER);
+            }
 
             return $this->redirectToRoute('app_release_index', [], Response::HTTP_SEE_OTHER);
         }
